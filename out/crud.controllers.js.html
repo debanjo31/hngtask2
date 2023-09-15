@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: crud.controllers.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: crud.controllers.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>const expressAsyncHandler = require('express-async-handler');
+const TaskTwoModel = require('../model/dynamicModel.js');
+const { nameSchema } = require('../utils/joi.schema.js');
+
+/**
+ * API to create user
+ * @author Onyebuchi Nwankwo
+ * @param {Request} req - The request as determined by express..
+ * @param {Response} response - The response as determined by express
+ */
+const createUser = expressAsyncHandler(async (req, res) => {
+  try {
+    const { name } = req?.body;
+
+    const { error } = nameSchema.validate(name);
+
+    if (error) {
+      return res.status(400).json({ error: 'Only String is accepted' });
+    }
+
+    const userExist = await TaskTwoModel.findOne({ name });
+    if (userExist) {
+      return res.status(400).json({ message: 'User already exist' });
+    }
+
+    // CREATE NEW USER
+    const newUser = await TaskTwoModel.create({
+      name,
+    });
+
+    return res
+      .status(200)
+      .json({ message: `${name} Created Successfully`, newUser });
+  } catch (error) {
+    res.status(500).json({ error: error?.message });
+  }
+});
+
+const getAllUsers = expressAsyncHandler(async (req, res) => {
+  try {
+    const findallUsers = await TaskTwoModel.find({});
+    if (findallUsers?.length === 0) {
+      return res.status(204).json({ message: 'No Registered User Yet' });
+    }
+
+    res
+      .status(200)
+      .json({ findallUsers, message: `Users' Fetched Successfully` });
+  } catch (error) {
+    res.status(500).json({ error: error?.message });
+  }
+});
+
+const getSingleUser = expressAsyncHandler(async (req, res) => {
+  try {
+    const userId = req?.params?.id;
+    const findUser = await TaskTwoModel.findById(userId);
+
+    if (!findUser) {
+      return res.status(404).json({ message: `Usert Does Not Exist` });
+    }
+
+    res
+      .status(200)
+      .json({ message: `User Fetched Successfully`, user: findUser });
+  } catch (error) {
+    res.status(500).json({ error: error?.message });
+  }
+});
+
+const updateUser = expressAsyncHandler(async (req, res) => {
+  try {
+    const userId = req?.params?.id;
+    const { name } = req?.body;
+
+    const { error } = nameSchema.validate(name);
+
+    if (error) {
+      return res.status(400).json({ error: 'Only String is accepted' });
+    }
+    const findUserToUpdate = await TaskTwoModel.findById(userId);
+
+    if (!findUserToUpdate) {
+      return res.status(404).json({ message: `Usert Does Not Exist` });
+    }
+
+    findUserToUpdate.name = name;
+    findUserToUpdate.save();
+
+    res.status(200).json({
+      message: `${name} Updated Successfully`,
+      updatedUser: findUserToUpdate,
+    });
+  } catch (error) {
+    res.status(500).json({ error: error?.message });
+  }
+});
+
+const deleteUser = expressAsyncHandler(async (req, res) => {
+  try {
+    const userId = req?.params?.id;
+    const findUserToDelete = await TaskTwoModel.findById(userId);
+
+    if (!findUserToDelete) {
+      return res.status(404).json({ message: `User Not Found` });
+    }
+
+    findUserToDelete.deleteOne();
+    res.status(200).json({ message: `User  Deleted Successfully` });
+  } catch (error) {
+    res.status(500).json({ error: error?.message });
+  }
+});
+
+module.exports = {
+  createUser,
+  getAllUsers,
+  updateUser,
+  deleteUser,
+  getSingleUser,
+};
+
+// In UML (Unified Modeling Language), "NameOperation" itself is not a standard or predefined class or operation. The term "NameOperation" in the previous response was used as a placeholder or example class name to represent a hypothetical class that performs CRUD (Create, Read, Update, Delete) operations specifically on a "name" input.
+
+// In a real-world application or system, you would replace "NameOperation" with a meaningful and relevant class name that represents the entity or concept you are modeling. The actual class name would depend on the context of your system. For example, if you are designing a system to manage customer names, you might have a class called "Customer" or "Person" that includes operations to CRUD customer names.
+
+// Here's a more generic representation:
+
+// -------------------------------------
+// |            Person Detail                |
+// -------------------------------------
+// | +name: String                      |
+// -------------------------------------
+// | +create(name: String): void       |
+// | +read(): String                   |
+// | +update(name: String): void       |
+// | +delete(): void                   |
+// -------------------------------------
+
+// Explanation:
+
+// NameOperation: This is the main class representing the CRUD operation on a "name" input.
+
+// Attributes:
+
+// +name: String: An attribute to store the name input.
+// Methods:
+
+// +create(name: String): void: Creates a new record with the given name.
+// +read(): String: Reads and returns the name value.
+// +update(name: String): void: Updates the name value with the given input.
+// +delete(): void: Deletes the record associated with the name.
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#createUser">createUser</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Mon Sep 11 2023 20:11:32 GMT+0100 (West Africa Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
