@@ -101,6 +101,6 @@ The base URL for all API endpoints is: [https://](https://hngtask2-08s5.onrender
 
 ## UML DIAGRAM
 
-![diagram](images/HNG_UML_DIAGRAM.png)
+![diagram](img/uml.png)
 
 - **Url**: [link to the UML file](https://github.com/debanjo31/hngtask2/blob/main/img/uml.png)
